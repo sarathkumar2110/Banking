@@ -1,0 +1,19 @@
+video {
+  position:absolute;
+  width: 100%;
+  height: 80%;
+  object-fit: cover;
+}
+.home-content {
+  position: relative;
+  padding-top: 200px;
+  color: #fff;
+  text-align: center;
+}
+h1 {
+  font-family: Playfair Display, serif;
+  font-size: clamp(45px, 7vw, 130px);
+  line-height: 1.1;
+}
+
+

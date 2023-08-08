@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/video.css' %}">
+<div class="home">
+      <video muted loop autoplay>
+        <source src="{% static 'video/bank.mp4' type='video/mp4'%}">
+      </video>
+      <div class="home-content">
+        <h1>WELCOME TO ABC BANK</h1>
+      </div>
+</div>
+{% endblock %}

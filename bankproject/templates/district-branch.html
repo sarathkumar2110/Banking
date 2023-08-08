@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="d-grid gap-2">
+        <button id="toggleFormButton" class="btn btn-outline-primary">View Forms</button>
+      </div>
+      <form id="bankForm" method="POST" style="display: none;">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="fname" class="form-control" placeholder="Enter your name">
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="age" class="form-control" placeholder="Age">
+        </div>
+
+        <div class="form-group">
+          <input type="date" name="dob" class="form-control" placeholder="Date of Birth">
+        </div>
+
+        <div class="form-group">
+          <div class="form-check">
+            <input type="radio" name="gender" class="form-check-input" value="Male">
+            <label class="form-check-label">Male</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" name="gender" class="form-check-input" value="Female">
+            <label class="form-check-label">Female</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" name="gender" class="form-check-input" value="Other">
+            <label class="form-check-label">Other</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="phonenumber" class="form-control" placeholder="Phone Number">
+        </div>
+
+        <div class="form-group">
+          <input type="email" name="mail" class="form-control" placeholder="Email">
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="address" class="form-control" placeholder="Address">
+        </div>
+
+        <div class="form-group">
+          <select id="accountTypeDropdown" name="accounttype" class="form-control">
+            <option value="">Select an Account Type</option>
+            {% for account in account_types %}
+            <option value="{{ account.id }}">{{ account.account }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select id="materialsDropdown" name="materials" class="form-control">
+            <option value="">Select a Material</option>
+            {% for material in materials_list %}
+            <option value="{{ material.id }}">{{ material.material }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select id="districtDropdown" name="districtDropdown" class="form-control">
+            <option value="">Select a District</option>
+            {% for district in districts %}
+            <option value="{{ district.id }}">{{ district.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <select id="branchDropdown" name="branchDropdown" class="form-control">
+            <option value="">Select a Branch</option>
+          </select>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('districtDropdown').addEventListener('change', function() {
+    var districtId = document.getElementById('districtDropdown').value;
+    var branchDropdown = document.getElementById('branchDropdown');
+
+    // Clear existing options
+    branchDropdown.innerHTML = '<option value="">Select a Branch</option>';
+
+    if (districtId) {
+      fetch(`/get_branches/${districtId}/`)
+        .then(response => response.json())
+        .then(data => {
+          // Populate the Branch dropdown with retrieved data
+          data.forEach(branch => {
+            var option = document.createElement('option');
+            option.value = branch.id;
+            option.text = branch.name;
+            branchDropdown.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching branches:', error);
+        });
+    }
+  });
+
+  document.getElementById('bankForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var formData = new FormData(document.getElementById('bankForm'));
+    fetch("{% url 'bank:bankform' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Debugging: Check the server's response
+        alert("Form has been Submitted");
+        // Reset the form after successful submission
+        document.getElementById('bankForm').reset();
+      })
+      .catch(error => {
+        console.error("Error submitting form:", error);
+      });
+  });
+
+  document.getElementById('toggleFormButton').addEventListener('click', function() {
+    var form = document.getElementById('bankForm');
+    if (form.style.display === 'none') {
+      form.style.display = 'block';
+    } else {
+      form.style.display = 'none';
+    }
+  });
+</script>
+{% endblock %}
